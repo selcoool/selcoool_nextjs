@@ -24,7 +24,8 @@ jobs:
         script: |
 
 
-          echo `https://github.com/${{ github.repository }}`
+            echo "https://github.com/${{ github.repository }}"
+          # Continue with your other commands here...
 
 
 
