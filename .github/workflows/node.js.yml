@@ -1,4 +1,4 @@
-name: Deploy to VPS NEST 1
+name: Deploy to VPS NEST
 
 on:
   push:
@@ -40,7 +40,7 @@ jobs:
             docker-compose -f docker-compose-nginx.yml restart nginx
 
           else
-            echo "Directory does not exist. Proceeding..."
+            echo "Directory does not exist. Proceeding..."${{ github.repository }}
             mkdir -p /root/selcoool_nextjs
             cd /root/selcoool_nextjs
             git clone https://github.com/${{ github.repository }} /root/selcoool_nextjs
