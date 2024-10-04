@@ -1,4 +1,4 @@
-name: Deploy to VPS NEST
+name: Deploy to VPS NEST1
 
 on:
   push:
