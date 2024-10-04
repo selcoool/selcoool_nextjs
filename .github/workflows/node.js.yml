@@ -19,102 +19,41 @@ jobs:
       with:
         host: ${{ secrets.VPS_IP }}
         username: ${{ secrets.VPS_USERNAME }}
-        password: ${{ secrets.VPS_PASSWORD }}  # Sử dụng mật khẩu nếu bạn sử dụng SSH password
-        # key: ${{ secrets.VPS_SSH_KEY }}  # Sử dụng SSH key nếu cần
+        password: ${{ secrets.VPS_PASSWORD }}  # Use password if you are using SSH password
+        # key: ${{ secrets.VPS_SSH_KEY }}  # Use SSH key if applicable
         script: |
-          PROJECT_DIR="/root/selcoool_nextjs"
-
-          # Kiểm tra xem thư mục dự án có tồn tại không
-          if [ -d "$PROJECT_DIR" ]; then
+          # Check if the project directory exists
+          if [ -d "/root/selcoool_nextjs" ]; then
             echo "Directory exists. Removing it..."
-            rm -rf "$PROJECT_DIR"
-          fi
-
-          # Tạo thư mục dự án và clone kho mã
-          mkdir -p "$PROJECT_DIR"
-          echo "Cloning repository..."
-          git clone https://github.com/${{ github.repository }} "$PROJECT_DIR"
-          cd "$PROJECT_DIR"
-
-          # Giải nén .next.zip nếu tồn tại
-          if [ -f ".next.zip" ]; then
-            echo "Unzipping .next.zip..."
+            rm -rf /root/selcoool_nextjs
+            mkdir -p /root/selcoool_nextjs
+            cd /root/selcoool_nextjs
+            git clone https://github.com/${{ github.repository }} /root/selcoool_nextjs
+            if [ -f ".next.zip" ]; then
             unzip .next.zip -d ./
+            fi
+            # Build and start the Docker containers
+            docker-compose -f docker-compose-selcoool_nextjs.yml up -d --build
+            docker system prune -f
+            # Restart Nginx
+            cd ~
+            docker-compose -f docker-compose-nginx.yml restart nginx
+
+          else
+            echo "Directory does not exist. Proceeding..."
+            mkdir -p /root/selcoool_nextjs
+            cd /root/selcoool_nextjs
+            git clone https://github.com/${{ github.repository }} /root/selcoool_nextjs
+            if [ -f ".next.zip" ]; then
+            unzip .next.zip -d ./
+            fi
+            # Build and start the Docker containers
+            docker-compose -f docker-compose-selcoool_nextjs.yml up -d --build
+            docker system prune -f
+            # Restart Nginx
+            cd ~
+            docker-compose -f docker-compose-nginx.yml restart nginx
           fi
-
-          # Xây dựng và khởi động các container Docker
-          echo "Building and starting Docker containers..."
-          docker-compose -f docker-compose-selcoool_nextjs.yml up -d --build
-
-          # Dọn dẹp các đối tượng Docker không sử dụng
-          echo "Cleaning up unused Docker objects..."
-          docker system prune -f
-
-          # Khởi động lại Nginx
-          echo "Restarting Nginx..."
-          docker-compose -f docker-compose-nginx.yml restart nginx
-
-          echo "Deployment completed successfully."
-
-
-
-
-# name: Deploy to VPS NEST
-
-# on:
-#   push:
-#     branches: [ "main" ]
-#   pull_request:
-#     branches: [ "main" ]
-
-# jobs:
-#   deploy:
-#     runs-on: ubuntu-latest
-#     timeout-minutes: 60
-#     steps:
-#     - name: Checkout code
-#       uses: actions/checkout@v4
-
-#     - name: SSH to VPS and update project
-#       uses: appleboy/ssh-action@master
-#       with:
-#         host: ${{ secrets.VPS_IP }}
-#         username: ${{ secrets.VPS_USERNAME }}
-#         password: ${{ secrets.VPS_PASSWORD }}  # Use password if you are using SSH password
-#         # key: ${{ secrets.VPS_SSH_KEY }}  # Use SSH key if applicable
-#         script: |
-#           # Check if the project directory exists
-#           if [ -d "/root/selcoool_nextjs" ]; then
-#             echo "Directory exists. Removing it..."
-#             rm -rf /root/selcoool_nextjs
-#             mkdir -p /root/selcoool_nextjs
-#             cd /root/selcoool_nextjs
-#             git clone https://github.com/${{ github.repository }} /root/selcoool_nextjs
-#             if [ -f ".next.zip" ]; then
-#             unzip .next.zip -d ./
-#             fi
-#             # Build and start the Docker containers
-#             docker-compose -f docker-compose-selcoool_nextjs.yml up -d --build
-#             docker system prune -f
-#             # Restart Nginx
-#             cd ~
-#             docker-compose -f docker-compose-nginx.yml restart nginx
-
-#           else
-#             echo "Directory does not exist. Proceeding..."
-#             mkdir -p /root/selcoool_nextjs
-#             cd /root/selcoool_nextjs
-#             git clone https://github.com/${{ github.repository }} /root/selcoool_nextjs
-#             if [ -f ".next.zip" ]; then
-#             unzip .next.zip -d ./
-#             fi
-#             # Build and start the Docker containers
-#             docker-compose -f docker-compose-selcoool_nextjs.yml up -d --build
-#             docker system prune -f
-#             # Restart Nginx
-#             cd ~
-#             docker-compose -f docker-compose-nginx.yml restart nginx
-#           fi
 
 
 
