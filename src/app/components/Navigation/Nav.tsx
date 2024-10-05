@@ -2,11 +2,9 @@
 import Image from 'next/image'
 import Link from 'next/link'
 import React from 'react'
-import { FaNewspaper, FaPhoneAlt, FaRegistered, FaUser,FaBook } from 'react-icons/fa'
+import { FaRegistered, FaUser,FaBook } from 'react-icons/fa'
 import { HiBars3BottomRight } from 'react-icons/hi2'
-import { LuMessagesSquare } from 'react-icons/lu'
 import { MdWork } from 'react-icons/md'
-import { PiBinoculars } from 'react-icons/pi'
 import { IoHomeSharp } from "react-icons/io5";
 import { usePathname } from 'next/navigation';
 
@@ -78,9 +76,10 @@ const Nav = ({showNav,setShowNav}:Props) => {
 
           {/* <button onClick={() => dispatch(toggleModal())} data-aos="fade-left" data-aos-delay="800"  data-aos-anchor-placement="top-center" className='hidden px-6 py-2 sm:px-8 sm:py-3 text-[0.7] sm:text-[1rem] bg-orange-500 transition-all duration-200 hover:bg-green-700 md:flex items-center rounded-md space-x-2  text-white'>
             <FaRegistered   className='w-[1rem] h-[1rem] sm:w-[1.4rem] sm:h-[1.4rem]'/>
-          </button> */}
+          </button>  */}
 
-          {/* Icon */}
+     
+            {/* Icon */}
           <HiBars3BottomRight  data-aos="fade-left" data-aos-delay="1000"  data-aos-anchor-placement="top-center" onClick={()=>setShowNav(!showNav)} className='lg:hidden w-[3rem] h-[3rem] text-black font-bold cursor-pointer'/>
 
         </div>

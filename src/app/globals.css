@@ -2,7 +2,23 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+@layer components {
+  .clip-path {
+    clip-path: polygon(50% 0%, 100% 0, 100% 50%, 71% 100%, 20% 100%, 0 85%, 0 0);
+  }
+} 
+
+
+.clip-path {
+  clip-path: polygon(50% 0%, 100% 0, 82% 100%, 18% 100%, 0 0);
+}
+
+
+.react-calendar{
+  width:100% !important;
+}
+
+/* :root {
   --background: #ffffff;
   --foreground: #171717;
 }
@@ -24,4 +40,4 @@ body {
   .text-balance {
     text-wrap: balance;
   }
-}
+} */

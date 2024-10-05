@@ -48,12 +48,12 @@ const Hero = () => {
                 </div>
 
                 <div className=' md:w-2/3 lg:mt-[-3rem] '>
-                       <h1 className='flex justify-center items-center text-[2rem]  md:text-[3rem] text-red-500  space-x-[1rem]'><span className='hover:scale-110 hover:text-zinc-50'>Welcome</span> <span className='hover:scale-110 hover:text-zinc-50'>to</span><span className='hover:scale-110 hover:text-zinc-50'>Selcoool's Profile</span></h1>
-                       <p  className='text-white text-[1.2rem]'><span>Full Name:</span><span className='text-orange-400'>Tran Minh Thanh</span></p>
-                       <p className='text-white text-[1.2rem]'><span>Age:</span><span className='text-orange-400'>29+</span></p>
-                       <p  className='text-white text-[1.2rem]'><span>Major:</span> <span className='text-orange-400'>English</span></p>
-                       <p  className='text-white text-[1.2rem]'><span>Hobby:</span> <span className='text-orange-400'>Music + Programming</span></p>
-                       <p  className='text-white text-[1.2rem]'><span>Marital Status:</span> <span className='text-orange-400'>Single</span></p>
+                       <h1 className='flex justify-center items-center text-[1.4rem]  md:text-[1.9rem] lg:md:text-[3rem] text-red-500  space-x-[1rem] hover:scale-110 hover:text-zinc-50'>Welcometo Selcoool's Profile</h1>
+                       <p  className='text-white text-[0.8rem] lg:text-[1.2rem]'><span>Full Name:</span><span className='text-orange-400'>Tran Minh Thanh</span></p>
+                       <p className='text-white text-[0.8rem] lg:text-[1.2rem]'><span>Age:</span><span className='text-orange-400'>29+</span></p>
+                       <p  className='text-white text-[0.8rem] lg:text-[1.2rem]'><span>Major:</span> <span className='text-orange-400'>English</span></p>
+                       <p  className='text-white text-[0.8rem] lg:text-[1.2rem]'><span>Hobby:</span> <span className='text-orange-400'>Music + Programming</span></p>
+                       <p  className='text-white text-[0.8rem] lg:text-[1.2rem]'><span>Marital Status:</span> <span className='text-orange-400'>Single</span></p>
 
                  </div>
                    

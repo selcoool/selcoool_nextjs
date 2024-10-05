@@ -120,19 +120,30 @@ const handleLogin = async () => {
   }
 };
 
-  
+useEffect(()=>{
+  const initAOS=()=>{
+       AOS.init({
+        duration:1000,
+        easing:"ease",
+        once:false,
+        anchorPlacement:"top-center"
+       })
+  };
+
+  initAOS();
+},[])
 
     return (
         <div className='bg-slate-200'>
 
-          <div className="flex justify-center items-center ">
+          {/* <div className="flex justify-center items-center ">
           <div>
       <button onClick={handleLogin}>Sign In</button>
     </div>
             <div className='w-[50%] h-[10%] bg-purple-500 flex justify-center items-center'>
               <button onClick={triggerFormCompleteRegistration}>Nút bấm</button>
             </div>
-          </div>
+          </div> */}
          <ResponsiveNav />
      <Hero/>
      <TimeLine/>
