@@ -12,7 +12,8 @@ export default function Home() {
   const [inputValue, setInputValue] = useState<string>("");
   const [editTaskId, setEditTaskId] = useState<number | null>(null);
   const [taskStatus, setTaskStatus] = useState<"To Do" | "In Progress" | "Done">("To Do");
-  const [draggingTask, setDraggingTask] = useState<Task | null>(null); // Change from dragging column to task
+  const [draggingTask, setDraggingTask] = useState<Task | null>(null);
+  const [dragOverStatus, setDragOverStatus] = useState<Task["status"] | null>(null);
 
   useEffect(() => {
     const savedTasks = localStorage.getItem("tasks");
@@ -62,45 +63,25 @@ export default function Home() {
     }
   };
 
-  const handleDragStart = (e: React.DragEvent<HTMLLIElement>, task: Task) => {
-    setDraggingTask(task);
-    e.dataTransfer.setData("taskId", task.id.toString());
-  };
-
   const handleTouchStart = (task: Task) => {
     setDraggingTask(task);
   };
 
-  const handleTouchMove = (e: React.TouchEvent) => {
-    e.preventDefault(); // Ngăn không cho trang di chuyển khi kéo trên thiết bị di động
+  const handleTouchMove = (e: React.TouchEvent, status: Task["status"]) => {
+    // Detect if we are hovering over a new column (status)
+    setDragOverStatus(status);
   };
 
-  const handleDragOver = (e: React.DragEvent<HTMLUListElement>) => {
-    e.preventDefault();
-  };
-
-  const handleTouchEnd = (status: Task["status"]) => {
-    if (draggingTask) {
+  const handleTouchEnd = () => {
+    if (draggingTask && dragOverStatus) {
       setTasks((prevTasks) => {
         const updatedTasks = prevTasks.filter((task) => task.id !== draggingTask.id);
-        const updatedTask = { ...draggingTask, status };
-        return [...updatedTasks, updatedTask];
-      });
-      setDraggingTask(null);
-    }
-  };
-
-  const handleDrop = (e: React.DragEvent<HTMLUListElement>, status: Task["status"]) => {
-    e.preventDefault();
-    const draggedTaskId = e.dataTransfer.getData("taskId");
-    const draggedTask = tasks.find((task) => task.id.toString() === draggedTaskId);
-    if (draggedTask) {
-      setTasks((prevTasks) => {
-        const updatedTasks = prevTasks.filter((task) => task.id !== draggedTask.id);
-        const updatedTask = { ...draggedTask, status };
+        const updatedTask = { ...draggingTask, status: dragOverStatus };
         return [...updatedTasks, updatedTask];
       });
     }
+    setDraggingTask(null);
+    setDragOverStatus(null);
   };
 
   const removeTask = (taskToRemove: Task) => {
@@ -142,23 +123,17 @@ export default function Home() {
           <div
             key={status}
             className="bg-gray-50 p-4 rounded border flex flex-col"
+            onTouchMove={(e) => handleTouchMove(e, status as Task["status"])}
+            onTouchEnd={handleTouchEnd}
           >
             <h2 className="font-bold mb-2 capitalize">{status}</h2>
-            <ul
-              onDrop={(e) => handleDrop(e, status as Task["status"])}
-              onDragOver={handleDragOver}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={() => handleTouchEnd(status as Task["status"])}
-              className="flex-1 min-h-[200px] overflow-y-auto"
-            >
+            <ul className="flex-1 min-h-[200px] overflow-y-auto">
               {tasks
                 .filter((task) => task.status === status)
                 .map((task) => (
                   <li
                     key={task.id}
                     className="border p-2 mb-2 bg-gray-100 cursor-move hover:bg-gray-200 rounded flex justify-between items-center"
-                    draggable
-                    onDragStart={(e) => handleDragStart(e, task)}
                     onTouchStart={() => handleTouchStart(task)}
                   >
                     <span className="flex-1">{task.title}</span>

@@ -39,11 +39,11 @@ const ChartCircle = () => {
   const adjustFontSize = () => {
     const width = window.innerWidth;
     if (width < 600) {
-      setFontSize(12); // Small screens
+      setFontSize(7); // Small screens
     } else if (width < 900) {
-      setFontSize(13); // Medium screens
+      setFontSize(10); // Medium screens
     } else {
-      setFontSize(15); // Large screens
+      setFontSize(13); // Large screens
     }
   };
 
