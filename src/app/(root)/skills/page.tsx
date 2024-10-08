@@ -7,13 +7,14 @@ import Footer from '../../components/Footer/page'
 
 import VideoList from '../../components/VideoList/VideoList'
 import ChartCircle from '@/app/components/Chart/ChartCircle'
+import DragDrop from '@/app/components/DragandDrop/DragDropList'
 
 const SkillsPage= () => {
   return (
     <div>
        <ResponsiveNav />
       <ChartCircle/>
-
+      <DragDrop />
        <VideoList/>
        <Footer/>
 
