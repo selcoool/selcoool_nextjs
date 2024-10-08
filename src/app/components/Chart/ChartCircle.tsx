@@ -43,7 +43,7 @@ const ChartCircle = () => {
     } else if (width < 900) {
       setFontSize(13); // Medium screens
     } else {
-      setFontSize(13); // Large screens
+      setFontSize(15); // Large screens
     }
   };
 
@@ -54,7 +54,7 @@ const ChartCircle = () => {
   }, []);
 
   return (
-    <div className="bg-white p-4 rounded-md h-80 relative">
+    <div className="w-[80%] mx-auto m-[5rem] bg-white p-4 rounded-md h-80 relative">
       <ResponsiveContainer width="100%" height="100%">
         <PieChart>
           <Pie
