@@ -1,4 +1,4 @@
-name: Deploy to VPS NEXT 
+name: Deploy to VPS NEST
 
 on:
   push:
@@ -20,17 +20,22 @@ jobs:
         host: ${{ secrets.VPS_IP }}
         username: ${{ secrets.VPS_USERNAME }}
         password: ${{ secrets.VPS_PASSWORD }}  # Use password if you are using SSH password
-        # key: ${{ secrets.VPS_SSH_KEY }}  # Use SSH key if applicable
+     
+
         script: |
           echo "Checking if the project directory exists..."
           if [ -d "/root/selcoool_nextjs" ]; then
             echo "Tồn tại thư mục dự án"
             cd /root/selcoool_nextjs
 
+            echo "Pulling latest changes from GitHub..."
             git pull
+            echo "Building and running Docker containers..."
             docker-compose -f docker-compose-selcoool_nextjs.yml up -d --build --timeout 3000
+            echo "Cleaning up unused Docker resources..."
             docker system prune -f
-            # Restart Nginx
+
+            echo "Restarting Nginx..."
             cd ~
             docker-compose -f docker-compose-nginx.yml restart nginx
           else
@@ -38,14 +43,44 @@ jobs:
             mkdir -p /root/selcoool_nextjs
             cd /root/selcoool_nextjs
 
+            echo "Cloning repository..."
             git clone https://github.com/${{ github.repository }} /root/selcoool_nextjs
+            echo "Building and running Docker containers..."
             docker-compose -f docker-compose-selcoool_nextjs.yml up -d --timeout 3000
+            echo "Cleaning up unused Docker resources..."
             docker system prune -f
-            # Restart Nginx
+
+            echo "Restarting Nginx..."
             cd ~
             docker-compose -f docker-compose-nginx.yml restart nginx
           fi
-          echo "Hoàn thành công việc update API project_nextjs. Chúc mừng bạn đã hoàn thành"
+          echo "Hoàn thành công việc update API project_nextjs."
+
+        # script: |
+        #   echo "Checking if the project directory exists..."
+        #   if [ -d "/root/selcoool_nextjs" ]; then
+        #     echo "Tồn tại thư mục dự án"
+        #     cd /root/selcoool_nextjs
+
+        #     git pull
+        #     docker-compose -f docker-compose-selcoool_nextjs.yml up -d --build --timeout 3000
+        #     docker system prune -f
+        #     # Restart Nginx
+        #     cd ~
+        #     docker-compose -f docker-compose-nginx.yml restart nginx
+        #   else
+        #     echo "Không hề tồn tại thư mục dự án"
+        #     mkdir -p /root/project_nextjs
+        #     cd /root/project_nextjs
+
+        #     git clone https://github.com/${{ github.repository }} /root/selcoool_nextjs
+        #     docker-compose -f docker-compose-selcoool_nextjs.yml up -d --timeout 3000
+        #     docker system prune -f
+        #     # Restart Nginx
+        #     cd ~
+        #     docker-compose -f docker-compose-nginx.yml restart nginx
+        #   fi
+        #   echo "Hoàn thành công việc update API project_nextjs. Chúc mừng bạn đã hoàn thành"
 
 
 
