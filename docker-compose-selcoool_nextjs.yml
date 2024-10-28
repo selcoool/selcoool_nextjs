@@ -8,10 +8,9 @@ services:
     ports:
       - "3000:3000"
     env_file:
-      - .env.local
+      - .env.local  # Đảm bảo file .env.local có trong thư mục gốc của dự án
     networks:
       - root_rent_room_network
-
 
 networks:
   root_rent_room_network:

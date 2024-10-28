@@ -1,4 +1,4 @@
-# Chọn image Node.js từ Docker Hub
+# Chọn image Node.js chính thức từ Docker Hub
 FROM node:18
 
 # Thiết lập thư mục làm việc trong container
@@ -16,11 +16,12 @@ COPY . .
 # Xây dựng ứng dụng Next.js
 RUN npm run build
 
-# Mở cổng ứng dụng
+# Mở cổng mà ứng dụng sẽ lắng nghe
 EXPOSE 3000
 
-# Chạy ứng dụng Next.js
+# Chạy ứng dụng Next.js ở chế độ production
 CMD ["npm", "start"]
+
 
 
 
@@ -41,8 +42,8 @@ CMD ["npm", "start"]
 # # Sao chép toàn bộ mã nguồn vào container
 # COPY . .
 
-# # # Xây dựng ứng dụng Next.js
-# # RUN npm run build
+# # Xây dựng ứng dụng Next.js
+# RUN npm run build
 
 # # Mở cổng mà ứng dụng sẽ lắng nghe
 # # EXPOSE 3000
