@@ -4,13 +4,14 @@ services:
     restart: always
     build:
       context: .
-      dockerfile: Dockerfile  # Đảm bảo Dockerfile này tồn tại ở thư mục gốc
+      dockerfile: Dockerfile
     ports:
       - "3000:3000"
     env_file:
-      - .env.local  # Đảm bảo .env.local có trong thư mục gốc của dự án
+      - .env.local
     networks:
       - root_rent_room_network
+
 
 networks:
   root_rent_room_network:
