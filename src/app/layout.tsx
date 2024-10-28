@@ -1,8 +1,12 @@
+
 // app/layout.tsx
 import type { Metadata } from 'next';
 import { Roboto_Mono } from 'next/font/google';
 import './globals.css';
 import StoreProvider from './storeProvider/StoreProvider';
+// import { GoogleOAuthProvider } from '@react-oauth/google';
+
+
 
 // Importing Google Fonts
 const robotoMono = Roboto_Mono({
@@ -21,17 +25,30 @@ export const metadata: Metadata = {
   },
 };
 
+
+
 // Layout component
 export default function RootLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+
+  // const clientId = process.env.NEXT_PUBLIC_GOOGLE_CLIENT_ID;
+
+  // if (!clientId) {
+  //   console.error("Google Client ID is not defined");
+  //   return null; // Or some fallback UI
+  // }
+  
   return (
+
     <html lang="en">
       <head>
         {/* Standard metadata */}
         <meta name="facebook-domain-verification" content="w484tu2k8ly6b5p1yl55mtjtwmbbqn" />
+        {/* <meta http-equiv="Cross-Origin-Opener-Policy" content="same-origin" /> */}
+
 
         {/* Facebook Pixel Script */}
         <script
@@ -61,10 +78,18 @@ export default function RootLayout({
       </head>
       <body className={robotoMono.className} suppressHydrationWarning={true}>
         <StoreProvider>
-          {children}
+  
+   
+        {children}
+      
+
+                   
+             
+   
         </StoreProvider>
       </body>
     </html>
+
   );
 }
 

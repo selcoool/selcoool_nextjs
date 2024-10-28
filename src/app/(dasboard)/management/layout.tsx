@@ -1,4 +1,5 @@
 import MenuDashBoard from "@/app/components_dashboard/Menu";
+import Navbar from "@/app/components_dashboard/Navbar";
 
 export default function RootLayout({
   children,
@@ -12,10 +13,12 @@ export default function RootLayout({
 
   return (
     <div className="flex">
-       <div className="bg-[#00ffff] w-[14vw] md:w-[15vw] xl:w-[16vw] h-full">
+      <div className="bg-[#eabe62] w-[14vw] md:w-[13vw] xl:w-[15vw] h-full min-h-[100vh]">
         <MenuDashBoard/>
+     
        </div>
-       <div className="bg-[#00b3b3] w-[85vw] md:w-[85vw] xl:w-[84vw] h-full" >
+       <div className="bg-[#a47345] w-[86vw] md:w-[87vw] xl:w-[85vw] h-full min-h-[100vh] " >
+          <Navbar/>
           {children}
        </div>
     </div>

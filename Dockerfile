@@ -17,7 +17,7 @@ RUN npm install
 COPY . .
 
 # Xây dựng ứng dụng Next.js
-# RUN npm run build
+RUN npm run build
 
 # Mở cổng mà ứng dụng sẽ lắng nghe
 # EXPOSE 3000

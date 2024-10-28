@@ -1,9 +1,9 @@
 import React from 'react'
 
-const InforPage4 = () => {
+const page = () => {
   return (
-    <div>InforPage4</div>
+    <div>page</div>
   )
 }
 
-export default InforPage4
+export default page

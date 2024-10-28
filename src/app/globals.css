@@ -19,7 +19,29 @@
 }
 
 
+ /* Custom scrollbar */
+ .custom-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
 
+  .rbc-calendar {
+    padding: 1rem 1rem !important;
+
+  }
+
+  /* .custom-scrollbar::-webkit-scrollbar {
+    width: 8px; 
+  }
+
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background-color: rgba(0, 0, 0, 0.4); 
+    border-radius: 10px; 
+  } 
+
+
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 0.1); 
+  } */
 
 
 
@@ -46,3 +68,11 @@ body {
     text-wrap: balance;
   }
 } */
+
+
+/* styles.css or your component's CSS file */
+
+.custom-font {
+  font-family: 'Roboto_Mono', sans-serif; /* Thay 'YourFontFamily' bằng tên font mà bạn muốn sử dụng */
+}
+

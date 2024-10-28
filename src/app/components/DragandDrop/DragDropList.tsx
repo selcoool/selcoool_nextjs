@@ -1,3 +1,4 @@
+
 "use client";
 import { useState, useEffect } from "react";
 
@@ -12,9 +13,9 @@ export default function Home() {
   const [inputValue, setInputValue] = useState<string>("");
   const [editTaskId, setEditTaskId] = useState<number | null>(null);
   const [taskStatus, setTaskStatus] = useState<"To Do" | "In Progress" | "Done">("To Do");
-  const [draggingTask, setDraggingTask] = useState<Task | null>(null);
-  const [dragOverStatus, setDragOverStatus] = useState<Task["status"] | null>(null);
+  const [draggingColumn, setDraggingColumn] = useState<string | null>(null);
 
+  // Load tasks from localStorage on initial render
   useEffect(() => {
     const savedTasks = localStorage.getItem("tasks");
     if (savedTasks) {
@@ -29,6 +30,7 @@ export default function Home() {
     }
   }, []);
 
+  // Save tasks to localStorage whenever tasks state changes
   useEffect(() => {
     if (tasks.length > 0) {
       localStorage.setItem("tasks", JSON.stringify(tasks));
@@ -63,25 +65,27 @@ export default function Home() {
     }
   };
 
-  const handleTouchStart = (task: Task) => {
-    setDraggingTask(task);
+  const handleDragStart = (e: React.DragEvent<HTMLLIElement>, task: Task) => {
+    e.dataTransfer.setData("taskId", task.id.toString());
   };
 
-  const handleTouchMove = (e: React.TouchEvent, status: Task["status"]) => {
-    // Detect if we are hovering over a new column (status)
-    setDragOverStatus(status);
+  const handleDragOver = (e: React.DragEvent<HTMLUListElement>, status: string) => {
+    e.preventDefault();
+    setDraggingColumn(status);
   };
 
-  const handleTouchEnd = () => {
-    if (draggingTask && dragOverStatus) {
+  const handleDrop = (e: React.DragEvent<HTMLUListElement>, targetStatus: Task["status"]) => {
+    const draggedTaskId = e.dataTransfer.getData("taskId");
+    const draggedTask = tasks.find((task) => task.id.toString() === draggedTaskId);
+    if (draggedTask) {
       setTasks((prevTasks) => {
-        const updatedTasks = prevTasks.filter((task) => task.id !== draggingTask.id);
-        const updatedTask = { ...draggingTask, status: dragOverStatus };
-        return [...updatedTasks, updatedTask];
+        const updatedTasks = prevTasks.filter((task) => task.id !== draggedTask.id);
+        const updatedTask = { ...draggedTask, status: targetStatus };
+        updatedTasks.push(updatedTask);
+        return updatedTasks;
       });
     }
-    setDraggingTask(null);
-    setDragOverStatus(null);
+    setDraggingColumn(null);
   };
 
   const removeTask = (taskToRemove: Task) => {
@@ -91,7 +95,7 @@ export default function Home() {
   const taskColumns = ["To Do", "In Progress", "Done"];
 
   return (
-    <div className="w-[80%] mx-auto mb-[2rem]  bg-white  rounded shadow">
+    <div className="w-[80%] mx-auto mb-[2rem] bg-white rounded shadow">
       <h1 className="text-xl font-bold mb-4">My Current Tasks ✅</h1>
       <input
         type="text"
@@ -122,19 +126,22 @@ export default function Home() {
         {taskColumns.map((status) => (
           <div
             key={status}
-            className="bg-gray-50 p-4 rounded border flex flex-col"
-            onTouchMove={(e) => handleTouchMove(e, status as Task["status"])}
-            onTouchEnd={handleTouchEnd}
+            className={`bg-gray-50 p-4 rounded border flex flex-col items-center ${draggingColumn === status ? "bg-blue-100" : ""}`} // Centered content
           >
             <h2 className="font-bold mb-2 capitalize">{status}</h2>
-            <ul className="flex-1 min-h-[200px] overflow-y-auto">
+            <ul
+              onDrop={(e) => handleDrop(e, status as Task["status"])}
+              onDragOver={(e) => handleDragOver(e, status)} 
+              className="flex-1 min-h-[200px] overflow-y-auto w-full" // Set width to full
+            >
               {tasks
                 .filter((task) => task.status === status)
                 .map((task) => (
                   <li
                     key={task.id}
                     className="border p-2 mb-2 bg-gray-100 cursor-move hover:bg-gray-200 rounded flex justify-between items-center"
-                    onTouchStart={() => handleTouchStart(task)}
+                    draggable
+                    onDragStart={(e) => handleDragStart(e, task)}
                   >
                     <span className="flex-1">{task.title}</span>
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
@@ -160,178 +167,6 @@ export default function Home() {
     </div>
   );
 }
-
-
-
-
-// "use client";
-// import { useState, useEffect } from "react";
-
-// interface Task {
-//   id: number;
-//   title: string;
-//   status: "To Do" | "In Progress" | "Done";
-// }
-
-// export default function Home() {
-//   const [tasks, setTasks] = useState<Task[]>([]);
-//   const [inputValue, setInputValue] = useState<string>("");
-//   const [editTaskId, setEditTaskId] = useState<number | null>(null);
-//   const [taskStatus, setTaskStatus] = useState<"To Do" | "In Progress" | "Done">("To Do");
-//   const [draggingColumn, setDraggingColumn] = useState<string | null>(null);
-
-//   // Load tasks from localStorage on initial render
-//   useEffect(() => {
-//     const savedTasks = localStorage.getItem("tasks");
-//     if (savedTasks) {
-//       try {
-//         const parsedTasks = JSON.parse(savedTasks);
-//         if (Array.isArray(parsedTasks)) {
-//           setTasks(parsedTasks);
-//         }
-//       } catch (error) {
-//         console.error("Error parsing tasks from localStorage", error);
-//       }
-//     }
-//   }, []);
-
-//   // Save tasks to localStorage whenever tasks state changes
-//   useEffect(() => {
-//     if (tasks.length > 0) {
-//       localStorage.setItem("tasks", JSON.stringify(tasks));
-//     }
-//   }, [tasks]);
-
-//   const addTask = () => {
-//     if (inputValue.trim()) {
-//       setTasks((prevTasks) => [
-//         ...prevTasks,
-//         { id: Date.now(), title: inputValue.trim(), status: taskStatus },
-//       ]);
-//       setInputValue("");
-//     }
-//   };
-
-//   const startEditTask = (task: Task) => {
-//     setEditTaskId(task.id);
-//     setInputValue(task.title);
-//     setTaskStatus(task.status);
-//   };
-
-//   const updateTask = () => {
-//     if (inputValue.trim() && editTaskId !== null) {
-//       setTasks((prevTasks) =>
-//         prevTasks.map((task) =>
-//           task.id === editTaskId ? { ...task, title: inputValue.trim(), status: taskStatus } : task
-//         )
-//       );
-//       setInputValue("");
-//       setEditTaskId(null);
-//     }
-//   };
-
-//   const handleDragStart = (e: React.DragEvent<HTMLLIElement>, task: Task) => {
-//     e.dataTransfer.setData("taskId", task.id.toString());
-//   };
-
-//   const handleDragOver = (e: React.DragEvent<HTMLUListElement>, status: string) => {
-//     e.preventDefault();
-//     setDraggingColumn(status);
-//   };
-
-//   const handleDrop = (e: React.DragEvent<HTMLUListElement>, targetStatus: Task["status"]) => {
-//     const draggedTaskId = e.dataTransfer.getData("taskId");
-//     const draggedTask = tasks.find((task) => task.id.toString() === draggedTaskId);
-//     if (draggedTask) {
-//       setTasks((prevTasks) => {
-//         const updatedTasks = prevTasks.filter((task) => task.id !== draggedTask.id);
-//         const updatedTask = { ...draggedTask, status: targetStatus };
-//         updatedTasks.push(updatedTask);
-//         return updatedTasks;
-//       });
-//     }
-//     setDraggingColumn(null);
-//   };
-
-//   const removeTask = (taskToRemove: Task) => {
-//     setTasks((prevTasks) => prevTasks.filter((task) => task.id !== taskToRemove.id));
-//   };
-
-//   const taskColumns = ["To Do", "In Progress", "Done"];
-
-//   return (
-//     <div className="w-[80%] mx-auto mb-[2rem] bg-white rounded shadow">
-//       <h1 className="text-xl font-bold mb-4">My Current Tasks ✅</h1>
-//       <input
-//         type="text"
-//         value={inputValue}
-//         onChange={(e) => setInputValue(e.target.value)}
-//         placeholder="Add a new task..."
-//         className="border p-2 rounded mb-2 w-full"
-//       />
-//       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-start mb-2 gap-2">
-//         <select
-//           value={taskStatus}
-//           onChange={(e) => setTaskStatus(e.target.value as "To Do" | "In Progress" | "Done")}
-//           className="border p-2 rounded w-full sm:w-1/2 mr-2"
-//         >
-//           <option value="To Do">To Do</option>
-//           <option value="In Progress">In Progress</option>
-//           <option value="Done">Done</option>
-//         </select>
-//         <button
-//           onClick={editTaskId !== null ? updateTask : addTask}
-//           className="bg-blue-500 text-white px-4 py-2 rounded w-full sm:w-auto"
-//         >
-//           {editTaskId !== null ? "Update Task" : "Add Task"}
-//         </button>
-//       </div>
-
-//       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mt-4">
-//         {taskColumns.map((status) => (
-//           <div
-//             key={status}
-//             className={`bg-gray-50 p-4 rounded border flex flex-col items-center ${draggingColumn === status ? "bg-blue-100" : ""}`} // Centered content
-//           >
-//             <h2 className="font-bold mb-2 capitalize">{status}</h2>
-//             <ul
-//               onDrop={(e) => handleDrop(e, status as Task["status"])}
-//               onDragOver={(e) => handleDragOver(e, status)} 
-//               className="flex-1 min-h-[200px] overflow-y-auto w-full" // Set width to full
-//             >
-//               {tasks
-//                 .filter((task) => task.status === status)
-//                 .map((task) => (
-//                   <li
-//                     key={task.id}
-//                     className="border p-2 mb-2 bg-gray-100 cursor-move hover:bg-gray-200 rounded flex justify-between items-center"
-//                     draggable
-//                     onDragStart={(e) => handleDragStart(e, task)}
-//                   >
-//                     <span className="flex-1">{task.title}</span>
-//                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between">
-//                       <button
-//                         onClick={() => startEditTask(task)}
-//                         className="bg-yellow-500 text-white px-2 py-1 rounded mb-2 sm:mb-0 sm:mr-2"
-//                       >
-//                         Edit
-//                       </button>
-//                       <button
-//                         onClick={() => removeTask(task)}
-//                         className="bg-red-500 text-white px-2 py-1 rounded"
-//                       >
-//                         Remove
-//                       </button>
-//                     </div>
-//                   </li>
-//                 ))}
-//             </ul>
-//           </div>
-//         ))}
-//       </div>
-//     </div>
-//   );
-// }
 
 
 
