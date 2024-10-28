@@ -3,12 +3,9 @@ services:
     container_name: selcoool_nextjs
     restart: always
     build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    env_file:
-      - .env.local  # Đảm bảo file .env.local có trong thư mục gốc của dự án
+      context: ./
+    # ports:
+    #   - "3000:3000"
     networks:
       - root_rent_room_network
 
