@@ -35,8 +35,8 @@ jobs:
             docker-compose -f docker-compose-nginx.yml restart nginx
           else
             echo "Không hề tồn tại thư mục dự án"
-            mkdir -p /root/project_nextjs
-            cd /root/project_nextjs
+            mkdir -p /root/selcoool_nextjs
+            cd /root/selcoool_nextjs
 
             git clone https://github.com/${{ github.repository }} /root/selcoool_nextjs
             docker-compose -f docker-compose-selcoool_nextjs.yml up -d --timeout 3000
