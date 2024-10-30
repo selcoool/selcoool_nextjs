@@ -20,6 +20,7 @@ const GoogleLogin: React.FC = () => {
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
   const router = useRouter();
+  const [isScriptLoaded, setIsScriptLoaded] = useState(false);
 
   useEffect(() => {
     const googleLoggedIn = Cookies.get('google_logged_in') === 'true';
@@ -28,15 +29,54 @@ const GoogleLogin: React.FC = () => {
     if (googleLoggedIn && storedUserInfo) {
       setIsLoggedIn(true);
       setUserInfo(JSON.parse(storedUserInfo));
-      // Uncomment to redirect if already logged in
-      // router.push('/profile');
+      // router.push('/profile'); // Uncomment if you want to redirect when already logged in
     } else {
       loadGoogleSDK();
     }
   }, [router]);
 
   const loadGoogleSDK = () => {
-    const handleCredentialResponse = (response: any) => {
+    if (!isScriptLoaded) {
+      const script = document.createElement('script');
+      script.src = 'https://accounts.google.com/gsi/client';
+      script.async = true;
+      script.onload = () => {
+        setIsScriptLoaded(true);
+        initializeGoogle();
+      };
+      script.onerror = () => {
+        console.error("Google SDK failed to load.");
+      };
+      document.body.appendChild(script);
+    }
+  };
+
+
+  
+  const initializeGoogle = () => {
+    window.google.accounts.id.initialize({
+      client_id: "404416305487-034gh1j7ngid1c6sa1f6g9nqok6iu9ru.apps.googleusercontent.com", // Thay thế bằng client ID của bạn
+      callback: handleCredentialResponse,
+    });
+    console.log("Google SDK initialized successfully.");
+    renderGoogleButton(); // Gọi hàm renderButton sau khi SDK đã được khởi tạo
+  };
+
+  const renderGoogleButton = () => {
+    const googleLoginDiv = document.getElementById("googleLoginDiv");
+    if (googleLoginDiv && window.google && window.google.accounts) {
+      window.google.accounts.id.renderButton(googleLoginDiv, {
+        theme: 'outline',
+        size: 'large',
+      });
+    } else {
+      console.error("Google SDK not loaded or not initialized properly.");
+    }
+  };
+
+  const handleCredentialResponse = (response: any) => {
+    console.log("Credential response received:", response);
+    if (response.credential) {
       const { credential } = response;
       const user = JSON.parse(atob(credential.split('.')[1]));
 
@@ -46,31 +86,14 @@ const GoogleLogin: React.FC = () => {
         picture: user.picture,
       };
 
-      // Store user info and login state in cookies
       setUserInfo(userInfo);
       Cookies.set('google_user_info', JSON.stringify(userInfo), { expires: 7 });
       Cookies.set('google_logged_in', 'true', { expires: 7 });
       setIsLoggedIn(true);
-      router.push('/profile'); // Redirect after login
-    };
-
-    const initializeGoogle = () => {
-      window.google.accounts.id.initialize({
-        client_id: "404416305487-034gh1j7ngid1c6sa1f6g9nqok6iu9ru.apps.googleusercontent.com"!, // Ensure this is correctly set
-        callback: handleCredentialResponse,
-      });
-    };
-
-    const script = document.createElement('script');
-    script.src = 'https://accounts.google.com/gsi/client';
-    script.async = true;
-    script.onload = initializeGoogle;
-    document.body.appendChild(script);
-
-    // Cleanup script on component unmount
-    return () => {
-      document.body.removeChild(script);
-    };
+      router.push('/'); // Redirect after login
+    } else {
+      console.error("No credential received");
+    }
   };
 
   const handleLogout = () => {
@@ -78,15 +101,8 @@ const GoogleLogin: React.FC = () => {
     Cookies.remove('google_user_info');
     setIsLoggedIn(false);
     setUserInfo(null);
-    router.push('/');
-  };
-
-  const handleGoogleLogin = () => {
-    if (window.google) {
-      window.google.accounts.id.prompt(); // Show the Google sign-in dialog
-    } else {
-      console.error("Google SDK not loaded.");
-    }
+    router.push('/'); // Redirect to home after logout
+    window.location.reload(); // Làm mới trang
   };
 
   return (
@@ -99,23 +115,272 @@ const GoogleLogin: React.FC = () => {
             <span className="font-bold text-gray-700">{userInfo.email}</span>
           </div>
           <button onClick={handleLogout} className="text-blue-600 hover:underline">
-            Log Out
+            Đăng xuất
           </button>
         </div>
       ) : (
-        <button
-          onClick={handleGoogleLogin}
-          className="flex items-center px-4 py-2 space-x-2 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition duration-200"
-        >
-          <img src="https://i.pinimg.com/564x/fb/52/e3/fb52e39c5910bdbcc3b98d58d6ca6944--softball-catcher-avatar.jpg" alt="Google" className="w-5 h-5 rounded-full" />
-          <span>Login with Google</span>
-        </button>
+
+        <div id="googleLoginDiv" className="flex items-center space-x-2">
+             Đăng nhập với Google
+   </div>
+     
       )}
     </div>
   );
 };
 
 export default GoogleLogin;
+
+
+
+
+
+// "use client";
+
+// import { useEffect, useState } from 'react';
+// import Cookies from 'js-cookie';
+// import { useRouter } from 'next/navigation';
+
+// declare global {
+//   interface Window {
+//     google?: any;
+//   }
+// }
+
+// interface UserInfo {
+//   name: string;
+//   email: string;
+//   picture: string;
+// }
+
+// const GoogleLogin: React.FC = () => {
+//   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+//   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+//   const router = useRouter();
+
+//   useEffect(() => {
+//     const googleLoggedIn = Cookies.get('google_logged_in') === 'true';
+//     const storedUserInfo = Cookies.get('google_user_info');
+
+//     if (googleLoggedIn && storedUserInfo) {
+//       setIsLoggedIn(true);
+//       setUserInfo(JSON.parse(storedUserInfo));
+//       // Uncomment to redirect if already logged in
+//       // router.push('/profile');
+//     } else {
+//       loadGoogleSDK();
+//     }
+//   }, [router]);
+
+//   const loadGoogleSDK = () => {
+//     const handleCredentialResponse = (response: any) => {
+//       console.log("Credential response received:", response);
+//       if (response.credential) {
+//         const user = JSON.parse(atob(response.credential.split('.')[1]));
+
+//         const userInfo: UserInfo = {
+//           name: user.name,
+//           email: user.email,
+//           picture: user.picture,
+//         };
+
+//         // Lưu thông tin người dùng và trạng thái đăng nhập trong cookies
+//         setUserInfo(userInfo);
+//         Cookies.set('google_user_info', JSON.stringify(userInfo), { expires: 7 });
+//         Cookies.set('google_logged_in', 'true', { expires: 7 });
+//         setIsLoggedIn(true);
+//         router.push('/profile'); // Chuyển hướng sau khi đăng nhập
+//       } else {
+//         console.error("No credential received");
+//       }
+//     };
+
+//     const initializeGoogle = () => {
+//       window.google.accounts.id.initialize({
+//         client_id: "404416305487-034gh1j7ngid1c6sa1f6g9nqok6iu9ru.apps.googleusercontent.com", // Đảm bảo client_id chính xác
+//         callback: handleCredentialResponse,
+//       });
+
+//       const googleLoginDiv = document.getElementById("googleLoginDiv");
+//       if (googleLoginDiv) {
+//         window.google.accounts.id.renderButton(googleLoginDiv, {
+//           theme: 'outline',
+//           size: 'large',
+//         });
+//       }
+//       console.log("Google SDK initialized successfully.");
+//     };
+
+//     const script = document.createElement('script');
+//     script.src = 'https://accounts.google.com/gsi/client';
+//     script.async = true;
+//     script.onload = initializeGoogle;
+//     script.onerror = () => {
+//       console.error("Google SDK failed to load.");
+//     };
+//     document.body.appendChild(script);
+
+//     // Cleanup script on component unmount
+//     return () => {
+//       document.body.removeChild(script);
+//     };
+//   };
+
+//   const handleLogout = () => {
+//     Cookies.remove('google_logged_in');
+//     Cookies.remove('google_user_info');
+//     setIsLoggedIn(false);
+//     setUserInfo(null);
+//     router.push('/'); // Chuyển hướng về trang chính sau khi đăng xuất
+//   };
+
+//   return (
+//     <div className="flex flex-col items-center space-y-4">
+//       {isLoggedIn && userInfo ? (
+//         <div className="flex items-center space-x-4 p-4 bg-white border border-gray-300 rounded-lg shadow-md">
+//           <img src={userInfo.picture} alt="Profile" className="w-10 h-10 rounded-full" />
+//           <div className="flex flex-col">
+//             <span className="font-bold text-gray-700">{userInfo.name}</span>
+//             <span className="font-bold text-gray-700">{userInfo.email}</span>
+//           </div>
+//           <button onClick={handleLogout} className="text-blue-600 hover:underline">
+//             Đăng xuất
+//           </button>
+//         </div>
+//       ) : (
+//         <div id="googleLoginDiv" className="flex items-center space-x-2">
+//           <span>Đăng nhập với Google</span>
+//         </div>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default GoogleLogin;
+
+
+
+
+
+
+// "use client";
+
+// import { useEffect, useState } from 'react';
+// import Cookies from 'js-cookie';
+// import { useRouter } from 'next/navigation';
+
+// declare global {
+//   interface Window {
+//     google?: any;
+//   }
+// }
+
+// interface UserInfo {
+//   name: string;
+//   email: string;
+//   picture: string;
+// }
+
+// const GoogleLogin: React.FC = () => {
+//   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+//   const [userInfo, setUserInfo] = useState<UserInfo | null>(null);
+//   const router = useRouter();
+
+//   useEffect(() => {
+//     const googleLoggedIn = Cookies.get('google_logged_in') === 'true';
+//     const storedUserInfo = Cookies.get('google_user_info');
+
+//     if (googleLoggedIn && storedUserInfo) {
+//       setIsLoggedIn(true);
+//       setUserInfo(JSON.parse(storedUserInfo));
+//       // Uncomment to redirect if already logged in
+//       // router.push('/profile');
+//     } else {
+//       loadGoogleSDK();
+//     }
+//   }, [router]);
+
+//   const loadGoogleSDK = () => {
+//     const handleCredentialResponse = (response: any) => {
+//       const { credential } = response;
+//       const user = JSON.parse(atob(credential.split('.')[1]));
+
+//       const userInfo: UserInfo = {
+//         name: user.name,
+//         email: user.email,
+//         picture: user.picture,
+//       };
+
+//       // Store user info and login state in cookies
+//       setUserInfo(userInfo);
+//       Cookies.set('google_user_info', JSON.stringify(userInfo), { expires: 7 });
+//       Cookies.set('google_logged_in', 'true', { expires: 7 });
+//       setIsLoggedIn(true);
+//       router.push('/profile'); // Redirect after login
+//     };
+
+//     const initializeGoogle = () => {
+//       window.google.accounts.id.initialize({
+//         client_id: "404416305487-034gh1j7ngid1c6sa1f6g9nqok6iu9ru.apps.googleusercontent.com"!, // Ensure this is correctly set
+//         callback: handleCredentialResponse,
+//       });
+//     };
+
+//     const script = document.createElement('script');
+//     script.src = 'https://accounts.google.com/gsi/client';
+//     script.async = true;
+//     script.onload = initializeGoogle;
+//     document.body.appendChild(script);
+
+//     // Cleanup script on component unmount
+//     return () => {
+//       document.body.removeChild(script);
+//     };
+//   };
+
+//   const handleLogout = () => {
+//     Cookies.remove('google_logged_in');
+//     Cookies.remove('google_user_info');
+//     setIsLoggedIn(false);
+//     setUserInfo(null);
+//     router.push('/');
+//   };
+
+//   const handleGoogleLogin = () => {
+//     if (window.google) {
+//       window.google.accounts.id.prompt(); // Show the Google sign-in dialog
+//     } else {
+//       console.error("Google SDK not loaded.");
+//     }
+//   };
+
+//   return (
+//     <div className="flex flex-col items-center space-y-4">
+//       {isLoggedIn && userInfo ? (
+//         <div className="flex items-center space-x-4 p-4 bg-white border border-gray-300 rounded-lg shadow-md">
+//           <img src={userInfo.picture} alt="Profile" className="w-10 h-10 rounded-full" />
+//           <div className="flex flex-col">
+//             <span className="font-bold text-gray-700">{userInfo.name}</span>
+//             <span className="font-bold text-gray-700">{userInfo.email}</span>
+//           </div>
+//           <button onClick={handleLogout} className="text-blue-600 hover:underline">
+//             Log Out
+//           </button>
+//         </div>
+//       ) : (
+//         <button
+//           onClick={handleGoogleLogin}
+//           className="flex items-center px-4 py-2 space-x-2 bg-blue-600 text-white font-semibold rounded-lg shadow hover:bg-blue-700 transition duration-200"
+//         >
+//           <img src="https://i.pinimg.com/564x/fb/52/e3/fb52e39c5910bdbcc3b98d58d6ca6944--softball-catcher-avatar.jpg" alt="Google" className="w-5 h-5 rounded-full" />
+//           <span>Login with Google</span>
+//         </button>
+//       )}
+//     </div>
+//   );
+// };
+
+// export default GoogleLogin;
 
 
 
