@@ -1,6 +1,6 @@
 # .github/workflows/deploy.yml
 
-name: Deploy to VPS NExT 1
+name: Deploy to VPS NExT 2
 
 on:
   push:
