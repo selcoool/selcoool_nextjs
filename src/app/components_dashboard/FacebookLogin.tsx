@@ -38,7 +38,7 @@ const FacebookLogin: React.FC = () => {
     } else {
       loadFacebookSDK();
     }
-  });
+  },[router]);
 
   const loadFacebookSDK = () => {
     return new Promise<void>((resolve) => {

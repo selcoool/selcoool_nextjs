@@ -1,29 +1,85 @@
-"use client"; // This line allows the component to use client-side features
-
+"use client"
 import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Cookies from 'js-cookie';
 
 const Profile = () => {
-  // const [user, setUser] = useState<any>(null);
+  const router = useRouter();
+  const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
+  const [userInfo, setUserInfo] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // useEffect(() => {
-  //   // Check for user data in cookies
-  //   const userData = Cookies.get('user_info');
-  //   if (userData) {
-  //     setUser(JSON.parse(userData));
-  //   } else {
-  //     window.location.href = '/'; // Redirect to home if not logged in
-  //   }
-  // }, []);
+  useEffect(() => {
+    const fbLoggedIn = Cookies.get('fb_logged_in') === 'true';
+    const googleLoggedIn = Cookies.get('google_logged_in') === 'true';
+    
+    const loggedIn = fbLoggedIn || googleLoggedIn;
+    setIsLoggedIn(loggedIn);
+    
+    if (!loggedIn) {
+      router.push('/'); // Redirect to home if not logged in
+    } else {
+      const storedUserInfo = JSON.parse(Cookies.get('fb_user_info') || Cookies.get('google_user_info') || '{}');
+      setUserInfo(storedUserInfo);
+    }
+    
+    setIsLoading(false);
+  }, [router]);
 
-  // if (!user) {
-  //   return <p>Loading...</p>;
-  // }
+  if (isLoading) {
+    return <p>Loading...</p>;
+  }
 
-  // console.log('user', user);
+  const profilePicture = userInfo?.picture?.data?.url || userInfo?.picture; // Access the correct picture URL
 
   return (
-    <h1>sdsf</h1>
+    <div>
+      {userInfo?.name ? (
+        <div>
+          <h1>Welcome, {userInfo.name}</h1>
+          {profilePicture && <img src={profilePicture} alt="Profile" />}
+          {/* Display additional user info */}
+        </div>
+      ) : (
+        <p>No user information available.</p>
+      )}
+    </div>
+  );
+};
+
+export default Profile;
+
+
+
+
+
+
+// "use client"; // This line allows the component to use client-side features
+
+// import { useEffect, useState } from 'react';
+// import Cookies from 'js-cookie';
+
+// const Profile = () => {
+//   // const [user, setUser] = useState<any>(null);
+
+//   // useEffect(() => {
+//   //   // Check for user data in cookies
+//   //   const userData = Cookies.get('user_info');
+//   //   if (userData) {
+//   //     setUser(JSON.parse(userData));
+//   //   } else {
+//   //     window.location.href = '/'; // Redirect to home if not logged in
+//   //   }
+//   // }, []);
+
+//   // if (!user) {
+//   //   return <p>Loading...</p>;
+//   // }
+
+//   // console.log('user', user);
+
+//   return (
+//     <h1>sdsf</h1>
     // <div className="flex flex-col items-center mt-10">
     //   <h1 className="text-2xl font-bold">Welcome, {user.name}!</h1>
     //   <p className="mt-2 text-lg">Email: {user.email}</p>
@@ -48,10 +104,10 @@ const Profile = () => {
     //     Logout
     //   </button>
     // </div>
-  );
-};
+//   );
+// };
 
-export default Profile;
+// export default Profile;
 
 
 
