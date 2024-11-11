@@ -10,7 +10,7 @@ type Message = {
 
 // const socket = io("http://localhost:9000/real_time_api");
 
-const socket = io("https://selcoool.com/real_time_api");
+const socket = io("https://api.selcoool.com/real_time_api");
 
 const ChatComponent = () => {
   const [messages, setMessages] = useState<Message[]>([]);
