@@ -20,7 +20,7 @@ COPY . .
 RUN npm run build
 
 # Mở cổng mà ứng dụng sẽ lắng nghe
-# EXPOSE 3000
+EXPOSE 3000
 
 
 # Chạy ứng dụng Next.js
