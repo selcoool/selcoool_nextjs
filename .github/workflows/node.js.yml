@@ -1,44 +1,44 @@
-name: Deploy to VPS NEST
+# name: Deploy to VPS NEST
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+# on:
+#   push:
+#     branches: [ "main" ]
+#   pull_request:
+#     branches: [ "main" ]
 
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
-    steps:
-    - name: Checkout code
-      uses: actions/checkout@v4
+# jobs:
+#   deploy:
+#     runs-on: ubuntu-latest
+#     timeout-minutes: 60
+#     steps:
+#     - name: Checkout code
+#       uses: actions/checkout@v4
 
-    - name: SSH to VPS and update project
-      uses: appleboy/ssh-action@master
-      with:
-        host: ${{ secrets.VPS_IP }}
-        username: ${{ secrets.VPS_USERNAME }}
-        password: ${{ secrets.VPS_PASSWORD }}  # 
-        script: |
-            set -e
-            # Navigate to project directory or clone if it doesn't exist
-            if [ -d "/root/selcoool_nextjs/.git" ]; then
-                cd /root/selcoool_nextjs
-                git pull
-            else
-                git clone https://github.com/${{ github.repository }} /root/selcoool_nextjs
-                cd /root/selcoool_nextjs
-            fi
+#     - name: SSH to VPS and update project
+#       uses: appleboy/ssh-action@master
+#       with:
+#         host: ${{ secrets.VPS_IP }}
+#         username: ${{ secrets.VPS_USERNAME }}
+#         password: ${{ secrets.VPS_PASSWORD }}  # 
+#         script: |
+#             set -e
+#             # Navigate to project directory or clone if it doesn't exist
+#             if [ -d "/root/selcoool_nextjs/.git" ]; then
+#                 cd /root/selcoool_nextjs
+#                 git pull
+#             else
+#                 git clone https://github.com/${{ github.repository }} /root/selcoool_nextjs
+#                 cd /root/selcoool_nextjs
+#             fi
 
-            # Build and start the Docker containers
-            docker-compose -f docker-compose-selcoool_nextjs.yml up -d --build
+#             # Build and start the Docker containers
+#             docker-compose -f docker-compose-selcoool_nextjs.yml up -d --build
             
-            # Clean up any dangling images (optional, but safer than `docker system prune`)
-            docker image prune -f
+#             # Clean up any dangling images (optional, but safer than `docker system prune`)
+#             docker image prune -f
 
-            # Restart Nginx service specifically
-            docker-compose -f docker-compose-nginx.yml restart nginx
+#             # Restart Nginx service specifically
+#             docker-compose -f docker-compose-nginx.yml restart nginx
 
 
 
