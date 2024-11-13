@@ -135,7 +135,6 @@ useEffect(()=>{
 
     return (
         <div className='bg-slate-200'>
-<h1>HHHHHHH</h1>
           {/* <div className="flex justify-center items-center ">
           <div>
       <button onClick={handleLogin}>Sign In</button>
