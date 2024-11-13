@@ -1,6 +1,6 @@
 # .github/workflows/deploy.yml
 
-name: Deploy to VPS NEXT 12
+name: Deploy to VPS NEXT 1
 
 on:
   push:
@@ -32,7 +32,7 @@ jobs:
               git pull
 
               echo "Building and running Docker containers..."
-              docker-compose -f docker-compose-selcoool_nextjs.yml up -d --build --timeout 3000
+              docker-compose -f docker-compose-selcoool_nextjs.yml up -d --build 
 
               echo "Cleaning up unused Docker resources..."
               docker system prune -f
@@ -46,7 +46,7 @@ jobs:
 
               git clone https://github.com/${{ github.repository }} .
               echo "Building and running Docker containers..."
-              docker-compose -f docker-compose-selcoool_nextjs.yml up -d --timeout 3000
+              docker-compose -f docker-compose-selcoool_nextjs.yml up -d
 
               echo "Cleaning up unused Docker resources..."
               docker system prune -f
