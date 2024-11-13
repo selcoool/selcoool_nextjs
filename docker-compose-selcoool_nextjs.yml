@@ -6,12 +6,12 @@ services:
       context: ./
     # ports:
     #   - "3000:3000"
-#     networks:
-#       - root_rent_room_network
+    networks:
+      - root_rent_room_network
 
-# networks:
-#   root_rent_room_network:
-#     external: true
+networks:
+  root_rent_room_network:
+    external: true
 
 
 # services:
